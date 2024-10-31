@@ -12,113 +12,88 @@
 
 #include "cpu.h"
 
-struct node *head = NULL;
-struct node *current = NULL;
-struct node *new = NULL;
-struct node *final = NULL;
-int num = 0;
+struct node *root = NULL;
+struct node *cur = NULL;
+struct node *newNode = NULL;
 
-void add(char *name, int priority, int burst) {
+int tru = 1;
 
-  if (head == NULL) {
-    head = malloc(sizeof(struct node));
+void add(char *name, int prio, int burst) {
 
-    // set the name of the task
-    head->task = malloc(sizeof(struct task));
-    head->task->name = name;
-    head->task->burst = burst;
-    head->task->priority = priority;
-    // set the next node to be null
-    head->next = NULL;
+  if (root == NULL) {
+    root = malloc(sizeof(struct node));
+    root->task = malloc(sizeof(struct task));
 
-    current = head;
+    root->task->burst = burst;
+    root->task->name = name;
+    root->task->priority = prio;
+
+    root->next = NULL;
+
+    cur = root;
 
   } else {
 
-    new = malloc(sizeof(struct node));
+    newNode = malloc(sizeof(struct node));
 
-    new->task = malloc(sizeof(struct task));
-    new->task->burst = burst;
-    new->task->name = name;
-    new->task->priority = priority;
-    // if current->next is NULL
-    if (!(current->next)) {
-      if (((new->task->burst) > (current->task->burst)) || ((new->task->burst) == (current->task->burst))) {
-        current->next = new; // head points to second node
-        new->next = NULL;
+    newNode->task = malloc(sizeof(struct task));
+    newNode->task->burst = burst;
+    newNode->task->name = name;
+    newNode->task->priority = prio;
 
+    if (!cur->next) {
+      if (((cur->task->burst) < (newNode->task->burst)) || ((cur->task->burst) == (newNode->task->burst))) {
+        cur->next = newNode;
+        newNode->next = NULL;
+
+      } else {
+        newNode->next = cur;
+        cur = newNode;
+        root = newNode;
       }
-      // if the second node burst is smaller than the current burst
-      else {
+    } else {
 
-        // set new to point to head which is in the second position
-        new->next = current;
-        // head now holds the address of new which is in the first position
-        head = new;
-        // reset current to new
-        current = new;
-        // we still have the second node connected to null
-      }
-    }
+      while (tru) {
 
-    // T3 and on execute from here I think
-    else {
+        if (cur->next->task->burst > newNode->task->burst) {
 
-      while (1) {
+          if (cur->task->burst < newNode->task->burst) {
 
-        if ((new->task->burst < current->next->task->burst)) {
-
-          if (new->task->burst > current->task->burst) {
-            new->next = current->next;
-            current->next = new;
-            current = head; // do  i need this
+            newNode->next = cur->next;
+            cur->next = newNode;
+            cur = root;
             break;
-          } else if (new->task->burst < current->task->burst) {
+          } else if (newNode->task->burst < cur->task->burst) {
 
-            head = new;
-            new->next = current;
-            current = head;
+            root = newNode;
+            newNode->next = cur;
+            cur = root;
             break;
           }
 
-        }
+        } else if (cur->next->task->burst == newNode->task->burst) {
+          cur = cur->next;
 
-        else if (new->task->burst == current->next->task->burst) {
-          current = current->next;
+          if (cur->next == NULL) {
+            newNode->next = NULL;
+          } else if (cur->next->task->burst == newNode->task->burst) {
+            cur = cur->next;
+            newNode->next = cur->next;
 
-          if (current->next == NULL) {
-
-            new->next = NULL;
-
+          } else {
+            newNode->next = cur->next;
           }
 
-          else if (new->task->burst == current->next->task->burst) {
-
-            current = current->next;
-            new->next = current->next;
-
-          }
-
-          else {
-
-            new->next = current->next;
-          }
-
-          current->next = new;
-
-          current = head;
+          cur->next = newNode;
+          cur = root;
           break;
-        }
+        } else if ((newNode->task->burst) > (cur->next->task->burst)) {
+          cur = cur->next;
 
-        // if the new burst is greater than the current burst
-        else if ((new->task->burst) > (current->next->task->burst)) {
-          current = current->next;
-
-          if (current->next == NULL) {
-            // printf("testing");
-            current->next = new;
-            new->next = NULL;
-            current = head;
+          if (cur->next == NULL) {
+            cur->next = newNode;
+            newNode->next = NULL;
+            cur = root;
             break;
           }
         }
@@ -127,26 +102,16 @@ void add(char *name, int priority, int burst) {
   }
 }
 
-// invoke the scheduler
 void schedule() {
-  float turnaroundtime = 0;
-  float ResponseTime = 0;
-  float WaitTime = 0;
-  int burst = 0;
-  struct node *ref = head;
-  while (ref != NULL) {
-    num = num + 1;
-    run(ref->task, ref->task->burst);
-    burst = burst + ref->task->burst;
-    turnaroundtime = turnaroundtime + burst; // 5 (5+10+5)20  50      (5 + 5+10 + 5+10+15)
-    if (ref->next != NULL) {
-      ResponseTime = ResponseTime + burst;
-    }
-    ref = ref->next;
-  }
-  WaitTime = turnaroundtime - burst;
 
-  printf("The average turnaround time is : %f time units \n", (turnaroundtime) / num);
-  printf("The average ResponseTime is : %f time units \n", (ResponseTime) / num);
-  printf("The average WaitTime is : %f time units\n ", (WaitTime) / num);
+  int runTime = 0;
+  struct node *curr = root;
+  while (curr != NULL) {
+
+    run(curr->task, curr->task->burst);
+    runTime = runTime + curr->task->burst;
+
+    curr = curr->next;
+    printf("        Time is now: %d\n", runTime);
+  }
 }
