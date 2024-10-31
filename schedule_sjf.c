@@ -15,7 +15,6 @@
 struct node *root = NULL;
 struct node *cur = NULL;
 struct node *newNode = NULL;
-
 int tru = 1;
 
 void add(char *name, int prio, int burst) {
@@ -32,7 +31,6 @@ void add(char *name, int prio, int burst) {
     cur = root;
 
   } else {
-
     newNode = malloc(sizeof(struct node));
     newNode->task = malloc(sizeof(struct task));
 
@@ -41,7 +39,7 @@ void add(char *name, int prio, int burst) {
     newNode->task->priority = prio;
 
     if (!cur->next) {
-      if (((cur->task->burst) < (newNode->task->burst)) || ((cur->task->burst) == (newNode->task->burst))) {
+      if ((cur->task->burst < newNode->task->burst) || (cur->task->burst == newNode->task->burst)) {
         cur->next = newNode;
         newNode->next = NULL;
 
@@ -51,7 +49,6 @@ void add(char *name, int prio, int burst) {
         root = newNode;
       }
     } else {
-
       while (tru) {
         if (cur->next->task->burst > newNode->task->burst) {
           if (cur->task->burst < newNode->task->burst) {
