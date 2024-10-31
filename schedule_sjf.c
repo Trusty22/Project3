@@ -27,7 +27,6 @@ void add(char *name, int prio, int burst) {
     root->task->burst = burst;
     root->task->name = name;
     root->task->priority = prio;
-
     root->next = NULL;
 
     cur = root;
@@ -35,8 +34,8 @@ void add(char *name, int prio, int burst) {
   } else {
 
     newNode = malloc(sizeof(struct node));
-
     newNode->task = malloc(sizeof(struct task));
+
     newNode->task->burst = burst;
     newNode->task->name = name;
     newNode->task->priority = prio;
@@ -54,9 +53,7 @@ void add(char *name, int prio, int burst) {
     } else {
 
       while (tru) {
-
         if (cur->next->task->burst > newNode->task->burst) {
-
           if (cur->task->burst < newNode->task->burst) {
 
             newNode->next = cur->next;
@@ -87,9 +84,9 @@ void add(char *name, int prio, int burst) {
           cur->next = newNode;
           cur = root;
           break;
-        } else if ((newNode->task->burst) > (cur->next->task->burst)) {
-          cur = cur->next;
+        } else if (cur->next->task->burst < newNode->task->burst) {
 
+          cur = cur->next;
           if (cur->next == NULL) {
             cur->next = newNode;
             newNode->next = NULL;
@@ -103,14 +100,13 @@ void add(char *name, int prio, int burst) {
 }
 
 void schedule() {
-
   int runTime = 0;
+
   struct node *curr = root;
   while (curr != NULL) {
-
     run(curr->task, curr->task->burst);
-    runTime = runTime + curr->task->burst;
 
+    runTime = runTime + curr->task->burst;
     curr = curr->next;
     printf("        Time is now: %d\n", runTime);
   }
