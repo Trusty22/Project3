@@ -1,49 +1,71 @@
-#include "cpu.h"
+// #include "cpu.h"
 #include "list.h"
 #include "schedulers.h"
 #include "task.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-struct node *list;
-int tid = 0;
+/**/
+
+/**/
+
+struct node *head = NULL;
+struct node *last = NULL;
+struct node *new = NULL;
+int num = 0;
 
 void add(char *name, int priority, int burst) {
-  Task *toAdd = malloc(sizeof(Task));
-  toAdd->name = name;
-  toAdd->priority = priority;
-  toAdd->burst = burst;
-  toAdd->tid = tid++;
-  //  insert_end(&list, toAdd);
+  if (head == NULL) {
+    head = malloc(sizeof(struct node));
+    last = malloc(sizeof(struct node));
 
-  // printf("%s\t%d\t%d\t%d\n", toAdd->name, toAdd->priority, toAdd->burst, toAdd->tid);
+    // set the name of the task
+    head->task = malloc(sizeof(struct task));
+    head->task->name = name;
+    head->task->burst = burst;
+    head->task->priority = priority;
+    // set the next node to be null
+    head->next = NULL;
+
+    last = head;
+  }
+
+  else {
+
+    new = malloc(sizeof(struct node));
+    last->next = new;
+    new->task = malloc(sizeof(struct task));
+    new->task->name = name;
+    new->task->burst = burst;
+    new->task->priority = priority;
+    new->next = NULL;
+    last = new;
+  }
 }
 
+// invoke the scheduler
 void schedule() {
-  double currTime = 0;   // time elapsed before handling current process
-  double turnaround = 0; // burst + completion time
-  double wait = 0;       // turnaround time - burst time
-  double response = 0;   // start time
-  struct node *curr = list;
-  while (curr) {
-    wait += currTime;
-    response += currTime;
-    run(curr->task, curr->task->burst);
-    currTime += curr->task->burst;
-    turnaround += currTime;
-    curr = curr->next;
+  int final = 0;
+  float turnaroundtime = 0;
+  float WaitTime = 0;
+  float ResponseTime = 0;
+
+  struct node *ref = head;
+  while (ref != NULL) {
+    num = num + 1;
+    run(ref->task, ref->task->burst);
+
+    final = final + ref->task->burst;        // 5 15 30
+    turnaroundtime = turnaroundtime + final; // 5 (5+10+5)20  50      (5 + 5+10 + 5+10+15)
+    if (ref->next != NULL) {
+      ResponseTime = ResponseTime + final;
+    }
+    ref = ref->next;
   }
-  struct node *temp;
-  // I'm a responsible C programmer so I clean up after myself
-  while (list) {
-    temp = list;
-    list = list->next;
-    free(temp->task);
-    free(temp);
-  }
-  turnaround /= tid;
-  wait /= tid;
-  response /= tid;
-  printf("Avg wait: %.3f\nAvg response: %.3f\nAvg turnaround: %.3f\n", wait, response, turnaround);
-  return;
+  WaitTime = turnaroundtime - final;
+
+  printf("The average turnaround time is : %f time units \n", turnaroundtime / num);
+  printf("The average ResponseTime is : %f time units \n", ResponseTime / num);
+  printf("The average WaitTime is : %f time units\n ", WaitTime / num);
 }
