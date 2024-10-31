@@ -1,5 +1,9 @@
 {
     "files.associations": {
-        "cpu.h": "c"
+        "cpu.h": "c",
+        "stdio.h": "c",
+        "string.h": "c",
+        "stdlib.h": "c",
+        "schedulers.h": "c"
     }
 }

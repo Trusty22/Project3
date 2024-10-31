@@ -1,10 +1,16 @@
-// #include "cpu.h"
-#include "list.h"
-#include "schedulers.h"
-#include "task.h"
-#include <stdio.h>
 #include <stdlib.h>
+
+#include <stdio.h>
+
 #include <string.h>
+
+#include "task.h"
+
+#include "list.h"
+
+#include "schedulers.h"
+
+#include "cpu.h"
 
 /**/
 
