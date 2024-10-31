@@ -12,66 +12,45 @@
 
 #include "cpu.h"
 
-/**/
+struct node *root = NULL;
+struct node *newNode = NULL;
+struct node *end = NULL;
 
-/**/
+void add(char *name, int prio, int burst) {
+  if (root == NULL) {
+    root = malloc(sizeof(struct node));
+    end = malloc(sizeof(struct node));
+    root->task = malloc(sizeof(struct task));
 
-struct node *head = NULL;
-struct node *last = NULL;
-struct node *new = NULL;
-int num = 0;
+    root->task->burst = burst;
+    root->task->name = name;
+    root->task->priority = prio;
+    root->next = NULL;
 
-void add(char *name, int priority, int burst) {
-  if (head == NULL) {
-    head = malloc(sizeof(struct node));
-    last = malloc(sizeof(struct node));
+    end = root;
+  } else {
+    newNode = malloc(sizeof(struct node));
+    end->next = newNode;
+    newNode->task = malloc(sizeof(struct task));
 
-    // set the name of the task
-    head->task = malloc(sizeof(struct task));
-    head->task->name = name;
-    head->task->burst = burst;
-    head->task->priority = priority;
-    // set the next node to be null
-    head->next = NULL;
+    newNode->task->burst = burst;
+    newNode->task->name = name;
+    newNode->task->priority = prio;
+    newNode->next = NULL;
 
-    last = head;
-  }
-
-  else {
-
-    new = malloc(sizeof(struct node));
-    last->next = new;
-    new->task = malloc(sizeof(struct task));
-    new->task->name = name;
-    new->task->burst = burst;
-    new->task->priority = priority;
-    new->next = NULL;
-    last = new;
+    end = newNode;
   }
 }
 
-// invoke the scheduler
 void schedule() {
-  int final = 0;
-  float turnaroundtime = 0;
-  float WaitTime = 0;
-  float ResponseTime = 0;
+  int runTime = 0;
 
-  struct node *ref = head;
-  while (ref != NULL) {
-    num = num + 1;
-    run(ref->task, ref->task->burst);
+  struct node *curr = root;
+  while (curr != NULL) {
+    run(curr->task, curr->task->burst);
 
-    final = final + ref->task->burst;        // 5 15 30
-    turnaroundtime = turnaroundtime + final; // 5 (5+10+5)20  50      (5 + 5+10 + 5+10+15)
-    if (ref->next != NULL) {
-      ResponseTime = ResponseTime + final;
-    }
-    ref = ref->next;
+    runTime = runTime + curr->task->burst;
+    curr = curr->next;
+    printf("        Time is now: %d\n", runTime);
   }
-  WaitTime = turnaroundtime - final;
-
-  printf("The average turnaround time is : %f time units \n", turnaroundtime / num);
-  printf("The average ResponseTime is : %f time units \n", ResponseTime / num);
-  printf("The average WaitTime is : %f time units\n ", WaitTime / num);
 }
