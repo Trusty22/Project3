@@ -45,12 +45,12 @@ void add(char *name, int prio, int burst) {
 void schedule() {
   int runTime = 0;
 
-  struct node *curr = root;
-  while (curr != NULL) {
-    run(curr->task, curr->task->burst);
+  struct node *cur = root;
+  while (cur != NULL) {
+    run(cur->task, cur->task->burst);
 
-    runTime = runTime + curr->task->burst;
-    curr = curr->next;
+    runTime = runTime + cur->task->burst;
+    cur = cur->next;
     printf("        Time is now: %d\n", runTime);
   }
 }

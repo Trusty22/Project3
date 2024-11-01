@@ -109,28 +109,33 @@ void add(char *name, int prio, int burst) {
 }
 // invoke the scheduler
 void schedule() {
-
+  int nextBurst = 0;
+  int runTime = 0;
   cur = root;
-  struct node *ref = root;
-  struct node *beginning = malloc(sizeof(struct node));
-  int newNodeburst = 0;
-  while (ref != NULL) {
 
-    if (ref->next == NULL) {
-      run(ref->task, ref->task->burst);
+  struct node *tempNode = root;
+  struct node *start = malloc(sizeof(struct node));
+
+  while (tempNode != NULL) {
+    if (tempNode->next == NULL) {
+      runTime = runTime + 10; //
+      run(tempNode->task, tempNode->task->burst);
+      printf("        Time is now: %d\n", runTime);
+
       break;
     } else {
 
-      if ((ref->task->priority != ref->next->task->priority)) {
-
-        run(ref->task, ref->task->burst);
-        ref = ref->next;
+      if ((tempNode->task->priority != tempNode->next->task->priority)) {
+        runTime = runTime + tempNode->task->burst;
+        run(tempNode->task, tempNode->task->burst);
+        tempNode = tempNode->next;
+        printf("        Time is now: %d\n", runTime);
       } else {
 
-        if (ref->next != NULL) {
+        if (tempNode->next != NULL) {
 
-          if ((ref->task->priority == ref->next->task->priority)) {
-            cur = ref;
+          if ((tempNode->task->priority == tempNode->next->task->priority)) {
+            cur = tempNode;
 
             while (cur->next != NULL) {
 
@@ -138,60 +143,64 @@ void schedule() {
 
               if (cur->task->priority != cur->next->task->priority) {
 
-                beginning = cur->next;
+                start = cur->next;
 
                 cur->next = NULL;
-                cur = ref;
+                cur = tempNode;
                 break;
-              } else {
               }
             }
 
-            while (ref != NULL) {
-              if (ref->task->burst >= 10) {
-                newNodeburst = ref->task->burst - 10;
-                ref->task->burst = 10;
-                run(ref->task, 10);
-              } else if (ref->task->burst < 10) {
-                newNodeburst = 0;
-                run(ref->task, ref->task->burst);
+            while (tempNode != NULL) {
+              if (tempNode->task->burst >= 10) {
+                nextBurst = tempNode->task->burst - 10;
+                tempNode->task->burst = 10;
+                runTime = runTime + 10;
+                run(tempNode->task, 10);
+                printf("        Time is now: %d\n", runTime);
+              } else if (tempNode->task->burst < 10) {
+                runTime = runTime + tempNode->task->burst;
+
+                nextBurst = 0;
+                run(tempNode->task, tempNode->task->burst);
+                printf("        Time is now: %d\n", runTime);
               }
 
               while (1) {
                 if (cur->next != NULL) {
                   cur = cur->next;
                   if (cur->next == NULL) {
-                    if (newNodeburst != 0) {
+                    if (nextBurst != 0) {
                       struct node *newNodenode = malloc(sizeof(struct node));
                       newNodenode->task = malloc(sizeof(struct task));
-                      newNodenode->task->name = ref->task->name;
-                      newNodenode->task->burst = newNodeburst;
-                      newNodenode->task->priority = ref->task->priority;
-                      ref = ref->next;
+                      newNodenode->task->name = tempNode->task->name;
+                      newNodenode->task->burst = nextBurst;
+                      newNodenode->task->priority = tempNode->task->priority;
+                      tempNode = tempNode->next;
                       cur->next = newNodenode;
                       newNodenode->next = NULL;
-                      cur = ref;
+                      cur = tempNode;
 
                       break;
                     }
 
-                    else if (newNodeburst == 0) {
-                      ref = ref->next;
-                      cur = ref;
+                    else if (nextBurst == 0) {
+                      tempNode = tempNode->next;
+                      cur = tempNode;
                       break;
                     }
                   }
                 } else {
 
-                  ref = ref->next;
-                  cur = beginning;
+                  tempNode = tempNode->next;
+                  cur = start;
 
                   break;
                 }
               }
             }
 
-            ref = beginning;
+            tempNode = start;
           }
         }
       }
