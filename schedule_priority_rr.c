@@ -134,11 +134,11 @@ void schedule() {
       } else {
 
         if (tempNode->next != NULL) {
-          if ((tempNode->task->priority == tempNode->next->task->priority)) {
+          if ((tempNode->next->task->priority == tempNode->task->priority)) {
             cur = tempNode;
             while (cur->next != NULL) {
               cur = cur->next;
-              if (cur->task->priority != cur->next->task->priority) {
+              if (cur->next->task->priority != cur->task->priority) {
 
                 start = cur->next;
                 cur->next = NULL;
