@@ -116,53 +116,40 @@ void schedule() {
   int newNodeburst = 0;
   while (ref != NULL) {
 
-    // ref->next = 3 (this is the second 3rd)
     if (ref->next == NULL) {
       run(ref->task, ref->task->burst);
       break;
     } else {
 
-      //	ref->task->priority = first 3
-      // ref->next->task->priority = second 3
-
       if ((ref->task->priority != ref->next->task->priority)) {
 
         run(ref->task, ref->task->burst);
-        ref = ref->next; // ref = first 3
-      }
-
-      else {
+        ref = ref->next;
+      } else {
 
         if (ref->next != NULL) {
 
-          // first 3 = second 3 priority
-
           if ((ref->task->priority == ref->next->task->priority)) {
-
-            // set cur to point to ref ( location of first 3)
             cur = ref;
 
-            // cur->next is 3
             while (cur->next != NULL) {
 
-              cur = cur->next; // cur is third 3
+              cur = cur->next;
 
-              // the 3rd 3 priority != the 3rd 3 priority)
               if (cur->task->priority != cur->next->task->priority) {
 
-                beginning = cur->next; // set the beginning
+                beginning = cur->next;
 
                 cur->next = NULL;
-                cur = ref; // move cur back to ref so we can do round robin
+                cur = ref;
                 break;
               } else {
-                // cur = cur->next;	// cur = 2nd 3 priority
               }
             }
 
             while (ref != NULL) {
               if (ref->task->burst >= 10) {
-                newNodeburst = ref->task->burst - 10; // set newNodeburst to 0
+                newNodeburst = ref->task->burst - 10;
                 ref->task->burst = 10;
                 run(ref->task, 10);
               } else if (ref->task->burst < 10) {
@@ -172,8 +159,8 @@ void schedule() {
 
               while (1) {
                 if (cur->next != NULL) {
-                  cur = cur->next;         // cur points to newNodeT3
-                  if (cur->next == NULL) { //
+                  cur = cur->next;
+                  if (cur->next == NULL) {
                     if (newNodeburst != 0) {
                       struct node *newNodenode = malloc(sizeof(struct node));
                       newNodenode->task = malloc(sizeof(struct task));
@@ -189,14 +176,14 @@ void schedule() {
                     }
 
                     else if (newNodeburst == 0) {
-                      ref = ref->next; // ref points to newNode T3
-                      cur = ref;       // cur points to newNode T3
+                      ref = ref->next;
+                      cur = ref;
                       break;
                     }
                   }
-                } else { // if this is the end element
+                } else {
 
-                  ref = ref->next; // ref == NULL after this
+                  ref = ref->next;
                   cur = beginning;
 
                   break;
