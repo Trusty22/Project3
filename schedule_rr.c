@@ -46,24 +46,25 @@ void add(char *name, int prio, int burst) {
 
 // invoke the scheduler
 void schedule() {
-
   struct node *cur = root;
   struct node *tempNode = root;
-  int newNodeburst = 0;
+
+  int nextBurst = 0;
   int runTime = 0;
+  int tru = 1;
 
   while (tempNode != NULL) {
 
     if (tempNode->task->burst >= 10) {
 
-      newNodeburst = tempNode->task->burst - 10; // set newNodeburst to 10
+      nextBurst = tempNode->task->burst - 10; // set nextBurst to 10
 
       runTime = runTime + 10; // runTime is 60
       tempNode->task->burst = 10;
       run(tempNode->task, 10);
       printf("        Time is now: %d\n", runTime);
     } else if (tempNode->task->burst < 10) {
-      newNodeburst = 0;
+      nextBurst = 0;
 
       runTime = runTime + tempNode->task->burst;
 
@@ -71,15 +72,15 @@ void schedule() {
       printf("        Time is now: %d\n", runTime);
     }
 
-    while (1) {
+    while (tru) {
       if (cur->next != NULL) {
         cur = cur->next; // cur = T4;
         if (cur->next == NULL) {
-          if (newNodeburst != 0) {
+          if (nextBurst != 0) {
             struct node *newNodenode = malloc(sizeof(struct node));
             newNodenode->task = malloc(sizeof(struct task));
             newNodenode->task->name = tempNode->task->name;
-            newNodenode->task->burst = newNodeburst;
+            newNodenode->task->burst = nextBurst;
             newNodenode->task->priority = tempNode->task->priority;
             tempNode = tempNode->next; // tempNode points to P2
             cur->next = newNodenode;   // P4 points to newNode Node P1
@@ -89,7 +90,7 @@ void schedule() {
             break;
           }
 
-          else if (newNodeburst == 0) {
+          else if (nextBurst == 0) {
             tempNode = tempNode->next; // tempNode points to T3
             cur = tempNode;            // cur points to T3
             break;
@@ -97,12 +98,12 @@ void schedule() {
         }
       } else { // if this is the end element
 
-        if (newNodeburst != 0) {
+        if (nextBurst != 0) {
           struct node *newNode = malloc(sizeof(struct node));
           newNode->task = malloc(sizeof(struct task));
           newNode->task->name = tempNode->task->name;
           newNode->task->priority = tempNode->task->priority;
-          newNode->task->burst = newNodeburst;
+          newNode->task->burst = nextBurst;
           tempNode->next = newNode;
           tempNode = tempNode->next;
           newNode->next = NULL;
