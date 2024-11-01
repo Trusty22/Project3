@@ -107,10 +107,11 @@ void add(char *name, int prio, int burst) {
     }
   }
 }
-// invoke the scheduler
+
 void schedule() {
   int nextBurst = 0;
   int runTime = 0;
+  int tru = 1;
   cur = root;
 
   struct node *tempNode = root;
@@ -118,34 +119,31 @@ void schedule() {
 
   while (tempNode != NULL) {
     if (tempNode->next == NULL) {
-      runTime = runTime + 10; //
+      runTime = runTime + 10;
+
       run(tempNode->task, tempNode->task->burst);
       printf("        Time is now: %d\n", runTime);
-
       break;
     } else {
 
       if ((tempNode->task->priority != tempNode->next->task->priority)) {
         runTime = runTime + tempNode->task->burst;
+
         run(tempNode->task, tempNode->task->burst);
         tempNode = tempNode->next;
         printf("        Time is now: %d\n", runTime);
       } else {
 
         if (tempNode->next != NULL) {
-
           if ((tempNode->task->priority == tempNode->next->task->priority)) {
             cur = tempNode;
-
             while (cur->next != NULL) {
-
               cur = cur->next;
-
               if (cur->task->priority != cur->next->task->priority) {
 
                 start = cur->next;
-
                 cur->next = NULL;
+
                 cur = tempNode;
                 break;
               }
@@ -153,39 +151,44 @@ void schedule() {
 
             while (tempNode != NULL) {
               if (tempNode->task->burst >= 10) {
+
                 nextBurst = tempNode->task->burst - 10;
                 tempNode->task->burst = 10;
                 runTime = runTime + 10;
+
                 run(tempNode->task, 10);
                 printf("        Time is now: %d\n", runTime);
               } else if (tempNode->task->burst < 10) {
                 runTime = runTime + tempNode->task->burst;
-
                 nextBurst = 0;
+
                 run(tempNode->task, tempNode->task->burst);
                 printf("        Time is now: %d\n", runTime);
               }
 
-              while (1) {
+              while (tru) {
                 if (cur->next != NULL) {
                   cur = cur->next;
                   if (cur->next == NULL) {
                     if (nextBurst != 0) {
                       struct node *newNodenode = malloc(sizeof(struct node));
                       newNodenode->task = malloc(sizeof(struct task));
+
                       newNodenode->task->name = tempNode->task->name;
                       newNodenode->task->burst = nextBurst;
                       newNodenode->task->priority = tempNode->task->priority;
+
                       tempNode = tempNode->next;
                       cur->next = newNodenode;
                       newNodenode->next = NULL;
-                      cur = tempNode;
 
+                      cur = tempNode;
                       break;
                     }
 
                     else if (nextBurst == 0) {
                       tempNode = tempNode->next;
+
                       cur = tempNode;
                       break;
                     }
@@ -194,12 +197,10 @@ void schedule() {
 
                   tempNode = tempNode->next;
                   cur = start;
-
                   break;
                 }
               }
             }
-
             tempNode = start;
           }
         }
