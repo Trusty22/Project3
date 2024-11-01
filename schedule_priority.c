@@ -111,7 +111,6 @@ void add(char *name, int priority, int burst) {
   }
 }
 
-// invoke the scheduler
 void schedule() {
   int runTime = 0;
   int burst = 0;
