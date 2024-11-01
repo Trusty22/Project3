@@ -15,6 +15,7 @@
 struct node *root = NULL;
 struct node *cur = NULL;
 struct node *newNode = NULL;
+
 int tru = 1;
 
 void add(char *name, int priority, int burst) {
@@ -92,15 +93,15 @@ void add(char *name, int priority, int burst) {
           }
 
           cur->next = newNode;
-
           cur = root;
           break;
-        } else if ((newNode->task->priority) < (cur->next->task->priority)) {
+        } else if (cur->next->task->priority > newNode->task->priority) {
           cur = cur->next;
 
           if (cur->next == NULL) {
             cur->next = newNode;
             newNode->next = NULL;
+
             cur = root;
             break;
           }
@@ -112,27 +113,16 @@ void add(char *name, int priority, int burst) {
 
 // invoke the scheduler
 void schedule() {
-  int num = 0;
-  float ResponseTime = 0;
-  float turnaroundtime = 0;
-  float WaitTime = 0;
+  int runTime = 0;
   int burst = 0;
+  struct node *cur = root;
 
-  struct node *ref = root;
-  while (ref != NULL) {
-    num = num + 1;
-    run(ref->task, ref->task->burst);
-    burst = burst + ref->task->burst;
-    turnaroundtime = turnaroundtime + burst; // 5 (5+10+5)20  50      (5 + 5+10 + 5+10+15)
-    if (ref->next != NULL) {
-      ResponseTime = ResponseTime + burst;
-    }
-    ref = ref->next;
+  while (cur != NULL) {
+    run(cur->task, cur->task->burst);
+    burst = burst + cur->task->burst;
+    runTime = runTime + burst;
+    cur = cur->next;
+    printf("        Time is now: %d\n", runTime);
+    burst = 0;
   }
-
-  WaitTime = turnaroundtime - burst;
-
-  printf("The average turnaround time is : %f time units \n", (float)turnaroundtime / num);
-  printf("The average ResponseTime is : %f time units \n", (float)ResponseTime / num);
-  printf("The average WaitTime is : %f time units\n ", (float)WaitTime / num);
 }
