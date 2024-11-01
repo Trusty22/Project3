@@ -40,7 +40,7 @@ void add(char *name, int prio, int burst) {
     newNode->task->priority = prio;
 
     if (!(cur->next)) {
-      if (((newNode->task->priority) < (cur->task->priority)) || ((newNode->task->priority) == (cur->task->priority))) {
+      if ((cur->task->priority > newNode->task->priority) || (cur->task->priority == newNode->task->priority)) {
         cur->next = newNode;
         newNode->next = NULL;
 
@@ -53,37 +53,36 @@ void add(char *name, int prio, int burst) {
 
       while (tru) {
 
-        if ((newNode->task->priority > cur->next->task->priority)) {
+        if (cur->next->task->priority < newNode->task->priority) {
 
-          if (newNode->task->priority < cur->task->priority) {
+          if (cur->task->priority > newNode->task->priority) {
             newNode->next = cur->next;
             cur->next = newNode;
             cur = root;
             break;
-          } else if (newNode->task->priority > cur->task->priority) {
+          } else if (cur->task->priority < newNode->task->priority) {
 
             root = newNode;
             newNode->next = cur;
             cur = root;
             break;
-          } else if (newNode->task->priority == cur->task->priority) {
+          } else if (cur->task->priority == newNode->task->priority) {
             newNode->next = cur->next;
             cur->next = newNode;
             break;
           }
 
-        } else if (newNode->task->priority == cur->next->task->priority) {
+        } else if (cur->next->task->priority == newNode->task->priority) {
           cur = cur->next;
 
           if (cur->next == NULL) {
 
             newNode->next = NULL;
 
-          } else if (newNode->task->priority == cur->next->task->priority) {
+          } else if (cur->next->task->priority == newNode->task->priority) {
 
             cur = cur->next;
             newNode->next = cur->next;
-
           } else {
 
             newNode->next = cur->next;
@@ -93,7 +92,7 @@ void add(char *name, int prio, int burst) {
 
           cur = root;
           break;
-        } else if ((newNode->task->priority) < (cur->next->task->priority)) {
+        } else if (cur->next->task->priority > newNode->task->priority) {
           cur = cur->next;
 
           if (cur->next == NULL) {
